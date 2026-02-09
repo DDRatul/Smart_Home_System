@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "203845496649",
+    "project_id": "smart-system-f4f24",
+    "storage_bucket": "smart-system-f4f24.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203845496649:android:e8c44baca7c7705534b498",
+        "android_client_info": {
+          "package_name": "com.example.smart_crime_reporting"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPg3lGzKI4SVaIoAdxNCbK3PJfPp-LSq4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
