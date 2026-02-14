@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'smart-system-f4f24.firebasestorage.app',
     measurementId: 'G-JK8CQHLGJR',
   );
+
 }

@@ -33,11 +33,10 @@ class ReportService {
             .map((d) => CrimeReport.fromMap(d.id, d.data() as Map<String, dynamic>))
             .toList());
   }
-
-  Future<String> createReport(CrimeReport report) async {
-    final doc = await _reports.add(report.toMap());
-    return doc.id;
-  }
+Future<String> createReport(CrimeReport report) async {
+  await _reports.doc(report.id).set(report.toMap()); // ✅ use UUID as doc id
+  return report.id;
+}
 
   Future<void> updateStatus(String reportId, String newStatus) async {
     await _reports.doc(reportId).update({'status': newStatus});
