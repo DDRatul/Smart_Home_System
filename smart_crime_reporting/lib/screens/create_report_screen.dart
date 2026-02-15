@@ -111,295 +111,341 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       appBar: AppBar(
         title: const Text('Create Report'),
       ),
-      body: Stack(
-        children: [
-          Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
-              children: [
-                // Emergency notice (styled)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: cs.primaryContainer.withOpacity(0.55),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: cs.primary.withOpacity(0.18)),
+   body: Stack(
+  children: [
+    // 1) Background gradient
+    Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF0F172A),
+            Color(0xFF1D4ED8),
+            Color(0xFF9333EA),
+          ],
+        ),
+      ),
+    ),
+
+    // 2) Decorative bubbles
+    const Positioned(top: -80, left: -60, child: _Bubble(size: 220, opacity: 0.16)),
+    const Positioned(bottom: -90, right: -70, child: _Bubble(size: 260, opacity: 0.12)),
+    const Positioned(top: 140, right: -40, child: _Bubble(size: 140, opacity: 0.10)),
+
+    // 3) Your content on top
+    SafeArea(
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
+          children: [
+            // Glass card container
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.14),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: Colors.white.withOpacity(0.22)),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 28,
+                    offset: const Offset(0, 16),
+                    color: Colors.black.withOpacity(0.25),
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.warning_amber_rounded, color: cs.primary),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: Text(
-                          'If you are in immediate danger, contact local emergency services.',
-                          style: TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Title
-                _NiceField(
-                  controller: _title,
-                  label: "Title",
-                  hint: "Short summary (e.g., Phone stolen near SLC)",
-                  icon: Icons.title,
-                  validator: (v) {
-                    final s = (v ?? '').trim();
-                    if (s.isEmpty) return "Title is required";
-                    if (s.length < 5) return "Title is too short";
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 14),
-
-                // Category chips
-                Text(
-                  "Category",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    _CatChip(
-                      label: "Theft",
-                      value: "theft",
-                      selected: _category == "theft",
-                      onTap: _loading ? null : () => setState(() => _category = "theft"),
-                      icon: Icons.shopping_bag_outlined,
-                    ),
-                    _CatChip(
-                      label: "Harassment",
-                      value: "harassment",
-                      selected: _category == "harassment",
-                      onTap: _loading ? null : () => setState(() => _category = "harassment"),
-                      icon: Icons.record_voice_over_outlined,
-                    ),
-                    _CatChip(
-                      label: "Violence",
-                      value: "violence",
-                      selected: _category == "violence",
-                      onTap: _loading ? null : () => setState(() => _category = "violence"),
-                      icon: Icons.report_gmailerrorred_outlined,
-                    ),
-                    _CatChip(
-                      label: "Suspicious",
-                      value: "suspicious",
-                      selected: _category == "suspicious",
-                      onTap: _loading ? null : () => setState(() => _category = "suspicious"),
-                      icon: Icons.visibility_outlined,
-                    ),
-                    _CatChip(
-                      label: "Other",
-                      value: "other",
-                      selected: _category == "other",
-                      onTap: _loading ? null : () => setState(() => _category = "other"),
-                      icon: Icons.more_horiz,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Location
-                _NiceField(
-                  controller: _location,
-                  label: "Location",
-                  hint: "Text location (e.g., Waterloo, DC Library)",
-                  icon: Icons.place_outlined,
-                  validator: (v) {
-                    final s = (v ?? '').trim();
-                    if (s.isEmpty) return "Location is required";
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 14),
-
-                // Description
-                _NiceField(
-                  controller: _desc,
-                  label: "Description",
-                  hint: "Write details (what happened, time, suspects, etc.)",
-                  icon: Icons.notes_outlined,
-                  maxLines: 6,
-                  validator: (v) {
-                    final s = (v ?? '').trim();
-                    if (s.isEmpty) return "Description is required";
-                    if (s.length < 15) return "Please add more details";
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 6),
-
-                // Switches in cards
-                _SwitchCard(
-                  title: "Submit anonymously",
-                  subtitle: "Your identity will not be shown to others.",
-                  value: _anonymous,
-                  onChanged: _loading ? null : (v) => setState(() => _anonymous = v),
-                  icon: Icons.person_off_outlined,
-                ),
-                _SwitchCard(
-                  title: "Make report public",
-                  subtitle: "Others can read this report (good for community safety).",
-                  value: _isPublic,
-                  onChanged: _loading ? null : (v) => setState(() => _isPublic = v),
-                  icon: Icons.public_outlined,
-                ),
-
-                const SizedBox(height: 12),
-
-                // Evidence section
-                Row(
-                  children: [
-                    Text(
-                      "Evidence",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-                    ),
-                    const Spacer(),
-                    FilledButton.icon(
-                      onPressed: _loading ? null : _pickImage,
-                      icon: const Icon(Icons.add_a_photo_outlined),
-                      label: const Text("Add"),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-
-                if (_evidenceFiles.isEmpty)
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Emergency notice (styled)
                   Container(
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: cs.surfaceContainerHighest,
+                      color: Colors.white.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withOpacity(0.18)),
                     ),
                     child: Row(
-                      children: [
-                        Icon(Icons.image_outlined, color: cs.onSurfaceVariant),
-                        const SizedBox(width: 10),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Icon(Icons.warning_amber_rounded, color: Colors.white),
+                        SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            "No evidence added yet. Add photos if you have any.",
-                            style: TextStyle(color: cs.onSurfaceVariant),
+                            'If you are in immediate danger, contact local emergency services.',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
                           ),
                         ),
                       ],
                     ),
-                  )
-                else
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _evidenceFiles.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                    ),
-                    itemBuilder: (_, i) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.file(_evidenceFiles[i], fit: BoxFit.cover),
-                            Positioned(
-                              top: 6,
-                              right: 6,
-                              child: InkWell(
-                                onTap: _loading ? null : () => _removeEvidenceAt(i),
-                                child: Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.55),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(Icons.close, color: Colors.white, size: 16),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Title
+                  _NiceField(
+                    controller: _title,
+                    label: "Title",
+                    hint: "Short summary (e.g., Phone stolen near SLC)",
+                    icon: Icons.title,
+                    validator: (v) {
+                      final s = (v ?? '').trim();
+                      if (s.isEmpty) return "Title is required";
+                      if (s.length < 5) return "Title is too short";
+                      return null;
                     },
                   ),
 
-                const SizedBox(height: 12),
+                  const SizedBox(height: 14),
 
-                if (_err != null)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.red.withOpacity(0.35)),
-                    ),
+                  // Category chips
+                  Align(
+                    alignment: Alignment.centerLeft,
                     child: Text(
-                      _err!,
-                      style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w700),
+                      "Category",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
                     ),
                   ),
-              ],
-            ),
-          ),
+                  const SizedBox(height: 10),
 
-          // Bottom submit bar
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SafeArea(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 18,
-                      offset: const Offset(0, -8),
-                      color: Colors.black.withOpacity(0.10),
-                    ),
-                  ],
-                ),
-                child: SizedBox(
-                  height: 54,
-                  child: FilledButton.icon(
-                    onPressed: _loading ? null : _submit,
-                    icon: _loading
-                        ? const SizedBox(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.send_outlined),
-                    label: Text(_loading ? "Submitting..." : "Submit report"),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      _CatChip(
+                        label: "Theft",
+                        value: "theft",
+                        selected: _category == "theft",
+                        onTap: _loading ? null : () => setState(() => _category = "theft"),
+                        icon: Icons.shopping_bag_outlined,
+                      ),
+                      _CatChip(
+                        label: "Harassment",
+                        value: "harassment",
+                        selected: _category == "harassment",
+                        onTap: _loading ? null : () => setState(() => _category = "harassment"),
+                        icon: Icons.record_voice_over_outlined,
+                      ),
+                      _CatChip(
+                        label: "Violence",
+                        value: "violence",
+                        selected: _category == "violence",
+                        onTap: _loading ? null : () => setState(() => _category = "violence"),
+                        icon: Icons.report_gmailerrorred_outlined,
+                      ),
+                      _CatChip(
+                        label: "Suspicious",
+                        value: "suspicious",
+                        selected: _category == "suspicious",
+                        onTap: _loading ? null : () => setState(() => _category = "suspicious"),
+                        icon: Icons.visibility_outlined,
+                      ),
+                      _CatChip(
+                        label: "Other",
+                        value: "other",
+                        selected: _category == "other",
+                        onTap: _loading ? null : () => setState(() => _category = "other"),
+                        icon: Icons.more_horiz,
+                      ),
+                    ],
                   ),
-                ),
-              ),
-            ),
-          ),
 
-          // Loading overlay
-          if (_loading)
-            Positioned.fill(
-              child: IgnorePointer(
-                child: Container(
-                  color: Colors.black.withOpacity(0.06),
-                ),
+                  const SizedBox(height: 16),
+
+                  // Location
+                  _NiceField(
+                    controller: _location,
+                    label: "Location",
+                    hint: "Text location (e.g., Waterloo, DC Library)",
+                    icon: Icons.place_outlined,
+                    validator: (v) {
+                      final s = (v ?? '').trim();
+                      if (s.isEmpty) return "Location is required";
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // Description
+                  _NiceField(
+                    controller: _desc,
+                    label: "Description",
+                    hint: "Write details (what happened, time, suspects, etc.)",
+                    icon: Icons.notes_outlined,
+                    maxLines: 6,
+                    validator: (v) {
+                      final s = (v ?? '').trim();
+                      if (s.isEmpty) return "Description is required";
+                      if (s.length < 15) return "Please add more details";
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  _SwitchCard(
+                    title: "Submit anonymously",
+                    subtitle: "Your identity will not be shown to others.",
+                    value: _anonymous,
+                    onChanged: _loading ? null : (v) => setState(() => _anonymous = v),
+                    icon: Icons.person_off_outlined,
+                  ),
+                  _SwitchCard(
+                    title: "Make report public",
+                    subtitle: "Others can read this report (good for community safety).",
+                    value: _isPublic,
+                    onChanged: _loading ? null : (v) => setState(() => _isPublic = v),
+                    icon: Icons.public_outlined,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Evidence section
+                  Row(
+                    children: [
+                      Text(
+                        "Evidence",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                      ),
+                      const Spacer(),
+                      FilledButton.icon(
+                        onPressed: _loading ? null : _pickImage,
+                        icon: const Icon(Icons.add_a_photo_outlined),
+                        label: const Text("Add"),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  if (_evidenceFiles.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.white.withOpacity(0.16)),
+                      ),
+                      child: Row(
+                        children: const [
+                          Icon(Icons.image_outlined, color: Colors.white70),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              "No evidence added yet. Add photos if you have any.",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _evidenceFiles.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                      ),
+                      itemBuilder: (_, i) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.file(_evidenceFiles[i], fit: BoxFit.cover),
+                              Positioned(
+                                top: 6,
+                                right: 6,
+                                child: InkWell(
+                                  onTap: _loading ? null : () => _removeEvidenceAt(i),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.55),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.close, color: Colors.white, size: 16),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
+                  const SizedBox(height: 12),
+
+                  if (_err != null)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.red.withOpacity(0.35)),
+                      ),
+                      child: Text(
+                        _err!,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                ],
               ),
             ),
-        ],
+          ],
+        ),
       ),
+    ),
+
+    // Bottom submit bar (same as yours)
+    Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.08),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 18,
+                offset: const Offset(0, -8),
+                color: Colors.black.withOpacity(0.12),
+              ),
+            ],
+          ),
+          child: SizedBox(
+            height: 54,
+            child: FilledButton.icon(
+              onPressed: _loading ? null : _submit,
+              icon: _loading
+                  ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.send_outlined),
+              label: Text(_loading ? "Submitting..." : "Submit report"),
+            ),
+          ),
+        ),
+      ),
+    ),
+
+    if (_loading)
+      Positioned.fill(
+        child: IgnorePointer(
+          child: Container(color: Colors.black.withOpacity(0.06)),
+        ),
+      ),
+  ],
+),
     );
   }
 }
@@ -423,20 +469,50 @@ class _NiceField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final white = Colors.white;
+    final hintC = Colors.white.withOpacity(0.65);
+    final borderC = Colors.white.withOpacity(0.22);
+
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
       validator: validator,
+      style: const TextStyle(
+        color: Colors.white,          // ✅ typed text color
+        fontWeight: FontWeight.w600,
+      ),
+      cursorColor: Colors.white,      // ✅ cursor color
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w700),
         hintText: hint,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+        hintStyle: TextStyle(color: hintC),
+        prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.85)),
+
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.10),   // ✅ glass background
+
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: borderC),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: borderC),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.45), width: 1.3),
+        ),
+
+        // ✅ error styles (so error text visible on dark bg)
+        errorStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
       ),
     );
   }
 }
-
 class _SwitchCard extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -499,6 +575,24 @@ class _CatChip extends StatelessWidget {
       ),
       onSelected: onTap == null ? null : (_) => onTap!(),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+    );
+  }
+}
+
+class _Bubble extends StatelessWidget {
+  final double size;
+  final double opacity;
+  const _Bubble({required this.size, required this.opacity});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withOpacity(opacity),
+      ),
     );
   }
 }

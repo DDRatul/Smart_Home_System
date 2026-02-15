@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'auth_gate.dart';
+import 'screens/start_screen.dart'; // ✅ add this (path may differ)
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -13,7 +14,7 @@ class App extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.indigo,
       ),
-      home: const AuthGate(),
+      home: const StartScreen(),
     );
   }
 }
